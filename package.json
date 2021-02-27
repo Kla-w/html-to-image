@@ -38,9 +38,6 @@
   },
   "husky": {
     "hooks": {
-      "prepare-commit-msg": "devmoji -e --lint",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
