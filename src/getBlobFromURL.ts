@@ -8,7 +8,7 @@ import { getDataURLContent } from './util'
 // Can not handle redirect-url, such as when access 'http://something.com/avatar.png'
 // will redirect to 'http://something.com/65fc2ffcc8aea7ba65a1d1feda173540'
 
-const TIMEOUT = 30000
+// const TIMEOUT = 30000
 const cache: {
   [url: string]: Promise<string | null>
 } = {}
