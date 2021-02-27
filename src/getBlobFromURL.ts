@@ -61,8 +61,7 @@ export function getBlobFromURL(
     return placeholder
   }
 
-  const deferred = window.fetch
-    ? window
+  const deferred = window
         .fetch(corsUrl)
         .then((response) => response.blob())
         .then(
@@ -76,45 +75,6 @@ export function getBlobFromURL(
         )
         .then(getDataURLContent)
         .catch(() => new Promise((resolve, reject) => reject()))
-    : new Promise<string | null>((resolve, reject) => {
-        const req = new XMLHttpRequest()
-
-        const timeout = () => {
-          reject(
-            new Error(
-              `Timeout of ${TIMEOUT}ms occured while fetching resource: ${corsUrl}`,
-            ),
-          )
-        }
-
-        const done = () => {
-          if (req.readyState !== 4) {
-            return
-          }
-
-          if (req.status !== 200) {
-            reject(
-              new Error(
-                `Failed to fetch resource: ${corsUrl}, status: ${req.status}`,
-              ),
-            )
-            return
-          }
-
-          const encoder = new FileReader()
-          encoder.onloadend = () => {
-            resolve(getDataURLContent(encoder.result as string))
-          }
-          encoder.readAsDataURL(req.response)
-        }
-
-        req.onreadystatechange = done
-        req.ontimeout = timeout
-        req.responseType = 'blob'
-        req.timeout = TIMEOUT
-        req.open('GET', corsUrl, true)
-        req.send()
-      })
 
   const promise = deferred.catch(failed) as Promise<string | null>
   cache[href] = promise
