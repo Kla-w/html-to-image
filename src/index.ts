@@ -60,6 +60,11 @@ export type Options = {
    * Option to skip the fonts download and embed.
    */
   skipFonts?: boolean
+
+  /**
+   * A url to a cors proxy to use for images and files from other origins
+   */
+  corsProxy?: string
 }
 
 function getImageSize(domNode: HTMLElement, options: Options = {}) {

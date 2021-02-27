@@ -21,6 +21,8 @@ export function getBlobFromURL(
   url: string,
   options: Options,
 ): Promise<string | null> {
+  let corsUrl = options.corsProxy ? options.corsProxy + url : url
+
   let href = url.replace(/\?.*/, '')
 
   if (isFont(href)) {
@@ -35,7 +37,7 @@ export function getBlobFromURL(
   // ref: https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#Bypassing_the_cache
   if (options.cacheBust) {
     // tslint:disable-next-line
-    url += (/\?/.test(url) ? '&' : '?') + new Date().getTime()
+    corsUrl += (/\?/.test(corsUrl) ? '&' : '?') + new Date().getTime()
   }
 
   const failed = (reason: any) => {
@@ -47,7 +49,7 @@ export function getBlobFromURL(
       }
     }
 
-    let msg = `Failed to fetch resource: ${url}`
+    let msg = `Failed to fetch resource: ${corsUrl}`
     if (reason) {
       msg = typeof reason === 'string' ? reason : reason.message
     }
@@ -61,7 +63,7 @@ export function getBlobFromURL(
 
   const deferred = window.fetch
     ? window
-        .fetch(url)
+        .fetch(corsUrl)
         .then((response) => response.blob())
         .then(
           (blob) =>
@@ -80,7 +82,7 @@ export function getBlobFromURL(
         const timeout = () => {
           reject(
             new Error(
-              `Timeout of ${TIMEOUT}ms occured while fetching resource: ${url}`,
+              `Timeout of ${TIMEOUT}ms occured while fetching resource: ${corsUrl}`,
             ),
           )
         }
@@ -93,7 +95,7 @@ export function getBlobFromURL(
           if (req.status !== 200) {
             reject(
               new Error(
-                `Failed to fetch resource: ${url}, status: ${req.status}`,
+                `Failed to fetch resource: ${corsUrl}, status: ${req.status}`,
               ),
             )
             return
@@ -110,7 +112,7 @@ export function getBlobFromURL(
         req.ontimeout = timeout
         req.responseType = 'blob'
         req.timeout = TIMEOUT
-        req.open('GET', url, true)
+        req.open('GET', corsUrl, true)
         req.send()
       })
 
